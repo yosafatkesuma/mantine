@@ -41,7 +41,7 @@ export default createStyles(
           color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
         },
 
-        '& thead tr th, & tfoot tr th': {
+        '& thead tr th, & tfoot tr th, & tbody tr th': {
           textAlign: 'left',
           fontWeight: 'bold',
           color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
@@ -56,7 +56,7 @@ export default createStyles(
           borderBottom: border,
         },
 
-        '& tfoot tr th': {
+        '& tfoot tr th, & tbody tr th': {
           borderTop: border,
         },
 
@@ -69,7 +69,7 @@ export default createStyles(
           fontSize: theme.fn.size({ size: fontSize, sizes: theme.fontSizes }),
         },
 
-        '& tbody tr:first-of-type td': {
+        '& tbody tr:first-of-type td, & tbody tr:first-of-type th': {
           borderTop: 'none',
         },
 
@@ -80,6 +80,10 @@ export default createStyles(
             borderRight: 'none',
             borderLeft: withColumnBorders ? border : 'none',
           },
+        },
+
+        '& tbody tr th': {
+          borderRight: withColumnBorders ? border : 'none',
         },
 
         '&[data-striped] tbody tr:nth-of-type(odd)': {
