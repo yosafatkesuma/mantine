@@ -9,7 +9,7 @@ export default { title: 'Tooltip' };
 export function Usage() {
   return (
     <div style={{ padding: 40 }}>
-      <Tooltip position="right" label="Tooltip label" withArrow>
+      <Tooltip position="right" label="Tooltip label" withArrow transitionProps={{ duration: 0 }}>
         <Button>target</Button>
       </Tooltip>
     </div>
@@ -129,6 +129,25 @@ export const WithArrow = () => (
   >
     <Button type="button">Tooltip button with arrow</Button>
   </Tooltip>
+);
+
+export const TooltipAndArrowWithBorder = () => (
+  <div style={{ padding: 40 }}>
+    <Tooltip
+      opened
+      position="right"
+      label="Tooltip and arrow with border"
+      withArrow
+      transitionProps={{ duration: 0 }}
+      arrowSize={10}
+      styles={{
+        tooltip: { border: '4px solid green' },
+        arrow: { border: '4px solid green' },
+      }}
+    >
+      <Button>target</Button>
+    </Tooltip>
+  </div>
 );
 
 export const WithArrowRadius = () => (

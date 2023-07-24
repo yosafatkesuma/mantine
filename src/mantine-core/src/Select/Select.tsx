@@ -3,8 +3,9 @@ import { useUncontrolled, useMergedRef, useDidUpdate, useScrollIntoView } from '
 import { DefaultProps, MantineSize, MantineShadow, getDefaultZIndex } from '@mantine/styles';
 import { groupOptions } from '@mantine/utils';
 import { SelectScrollArea } from './SelectScrollArea/SelectScrollArea';
+import { PortalProps } from '../Portal';
 import { Input, useInputProps } from '../Input';
-import { MantineTransition } from '../Transition';
+import { TransitionOverride } from '../Transition';
 import { DefaultItem } from './DefaultItem/DefaultItem';
 import { getSelectRightSectionProps } from './SelectRightSection/get-select-right-section-props';
 import { SelectItems } from './SelectItems/SelectItems';
@@ -32,14 +33,8 @@ export interface SelectSharedProps<Item, Value> {
   /** Input size */
   size?: MantineSize;
 
-  /** Dropdown body appear/disappear transition */
-  transition?: MantineTransition;
-
-  /** Dropdown body transition duration */
-  transitionDuration?: number;
-
-  /** Dropdown body transition timing function, defaults to theme.transitionTimingFunction */
-  transitionTimingFunction?: string;
+  /** Props added to Transition component that used to animate dropdown presence, use to configure duration and animation type, { duration: 0, transition: 'fade' } by default */
+  transitionProps?: TransitionOverride;
 
   /** Dropdown shadow from theme or any value to set box-shadow */
   shadow?: MantineShadow;
@@ -58,6 +53,9 @@ export interface SelectSharedProps<Item, Value> {
 
   /** Whether to render the dropdown in a Portal */
   withinPortal?: boolean;
+
+  /** Props to pass down to the portal when withinPortal is true */
+  portalProps?: Omit<PortalProps, 'children' | 'withinPortal'>;
 
   /** Limit amount of items displayed at a time for searchable select */
   limit?: number;
@@ -82,7 +80,7 @@ export interface SelectProps
   extends DefaultProps<BaseSelectStylesNames>,
     BaseSelectProps,
     SelectSharedProps<SelectItem, string | null> {
-  /** Maximum dropdown height in px */
+  /** Maximum dropdown height */
   maxDropdownHeight?: number;
 
   /** Set to true to enable search */
@@ -90,9 +88,6 @@ export interface SelectProps
 
   /** Allow to clear item */
   clearable?: boolean;
-
-  /** aria-label for clear button */
-  clearButtonLabel?: string;
 
   /** Called each time search value changes */
   onSearchChange?(query: string): void;
@@ -127,8 +122,8 @@ export interface SelectProps
   /** Should data be filtered when search value exactly matches selected item */
   filterDataOnExactSearchMatch?: boolean;
 
-  /** Set the clear button tab index to disabled or default after input field */
-  clearButtonTabIndex?: -1 | 0;
+  /** Props added to clear button */
+  clearButtonProps?: React.ComponentPropsWithoutRef<'button'>;
 }
 
 export function defaultFilter(value: string, item: SelectItem) {
@@ -144,8 +139,7 @@ const defaultProps: Partial<SelectProps> = {
   size: 'sm',
   shadow: 'sm',
   itemComponent: DefaultItem,
-  transition: 'fade',
-  transitionDuration: 0,
+  transitionProps: { transition: 'fade', duration: 0 },
   initiallyOpened: false,
   filter: defaultFilter,
   maxDropdownHeight: 220,
@@ -159,7 +153,6 @@ const defaultProps: Partial<SelectProps> = {
   switchDirectionOnFlip: false,
   filterDataOnExactSearchMatch: false,
   zIndex: getDefaultZIndex('popover'),
-  clearButtonTabIndex: 0,
   positionDependencies: [],
   dropdownPosition: 'flip',
 };
@@ -177,10 +170,8 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
     onKeyDown,
     onBlur,
     onFocus,
-    transition,
-    transitionDuration,
+    transitionProps,
     initiallyOpened,
-    transitionTimingFunction,
     unstyled,
     classNames,
     styles,
@@ -189,7 +180,6 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
     searchable,
     clearable,
     nothingFound,
-    clearButtonLabel,
     limit,
     disabled,
     onSearchChange,
@@ -205,6 +195,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
     onDropdownClose,
     onDropdownOpen,
     withinPortal,
+    portalProps,
     switchDirectionOnFlip,
     zIndex,
     name,
@@ -212,10 +203,10 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
     allowDeselect,
     placeholder,
     filterDataOnExactSearchMatch,
-    clearButtonTabIndex,
     form,
     positionDependencies,
     readOnly,
+    clearButtonProps,
     hoverOnSearchChange,
     ...others
   } = useInputProps('Select', defaultProps, props);
@@ -405,7 +396,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
     window.setTimeout(() => {
       targetRef.current = itemsRefs.current[filteredData[selectedItemIndex]?.value];
       scrollIntoView({ alignment: isColumn ? 'end' : 'start' });
-    }, 0);
+    }, 50);
 
   useDidUpdate(() => {
     if (shouldShowDropdown) scrollSelectedItemIntoView();
@@ -551,10 +542,10 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
     <Input.Wrapper {...wrapperProps} __staticSelector="Select">
       <SelectPopover
         opened={shouldShowDropdown}
-        transition={transition}
-        transitionDuration={transitionDuration}
-        shadow="sm"
+        transitionProps={transitionProps}
+        shadow={shadow}
         withinPortal={withinPortal}
+        portalProps={portalProps}
         __staticSelector="Select"
         onDirectionChange={setDirection}
         switchDirectionOnFlip={switchDirectionOnFlip}
@@ -564,6 +555,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
         classNames={classNames}
         styles={styles}
         unstyled={unstyled}
+        variant={inputProps.variant}
       >
         <SelectPopover.Target>
           <div
@@ -609,10 +601,9 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
                 styles,
                 size: inputProps.size,
                 shouldClear: clearable && !!selectedValue,
-                clearButtonLabel,
                 onClear: handleClear,
                 error: wrapperProps.error,
-                clearButtonTabIndex,
+                clearButtonProps,
                 disabled,
                 readOnly,
               })}
@@ -648,6 +639,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
             createLabel={createLabel}
             aria-label={wrapperProps.label}
             unstyled={unstyled}
+            variant={inputProps.variant}
           />
         </SelectPopover.Dropdown>
       </SelectPopover>

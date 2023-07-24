@@ -10,11 +10,11 @@ import {
   inline,
   limitShift,
 } from '@floating-ui/react';
-import { FloatingPosition, useFloatingAutoUpdate } from '../Floating';
+import { FloatingAxesOffsets, FloatingPosition, useFloatingAutoUpdate } from '../Floating';
 import { PopoverWidth, PopoverMiddlewares } from './Popover.types';
 
 interface UsePopoverOptions {
-  offset: number;
+  offset: number | FloatingAxesOffsets;
   position: FloatingPosition;
   positionDependencies: any[];
   onPositionChange?(position: FloatingPosition): void;
@@ -92,6 +92,7 @@ export function usePopover(options: UsePopoverOptions) {
 
   useFloatingAutoUpdate({
     opened: options.opened,
+    position: options.position,
     positionDependencies: options.positionDependencies,
     floating,
   });
@@ -99,6 +100,14 @@ export function usePopover(options: UsePopoverOptions) {
   useDidUpdate(() => {
     options.onPositionChange?.(floating.placement);
   }, [floating.placement]);
+
+  useDidUpdate(() => {
+    if (!options.opened) {
+      options.onClose?.();
+    } else {
+      options.onOpen?.();
+    }
+  }, [options.opened]);
 
   return {
     floating,

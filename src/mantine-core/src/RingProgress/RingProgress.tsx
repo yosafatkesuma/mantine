@@ -16,13 +16,15 @@ interface RingProgressSection extends React.ComponentPropsWithRef<'circle'> {
 export interface RingProgressProps
   extends DefaultProps<RingProgressStylesNames>,
     React.ComponentPropsWithoutRef<'div'> {
+  variant?: string;
+
   /** Label displayed in the center of the ring */
   label?: React.ReactNode;
 
   /** Ring thickness */
   thickness?: number;
 
-  /** Width and height of the progress ring in px */
+  /** Width and height of the progress ring */
   size?: number;
 
   /** Sets whether the edges of the progress circle are rounded */
@@ -53,10 +55,17 @@ export const RingProgress = forwardRef<HTMLDivElement, RingProgressProps>((props
     roundCaps,
     rootColor,
     unstyled,
+    variant,
     ...others
   } = useComponentDefaultProps('RingProgress', defaultProps, props);
 
-  const { classes, cx } = useStyles(null, { classNames, styles, unstyled, name: 'RingProgress' });
+  const { classes, cx } = useStyles(null, {
+    name: 'RingProgress',
+    classNames,
+    styles,
+    unstyled,
+    variant,
+  });
 
   const curves = getCurves({
     size,
@@ -85,9 +94,7 @@ export const RingProgress = forwardRef<HTMLDivElement, RingProgressProps>((props
       ref={ref}
       {...others}
     >
-      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-        {curves}
-      </svg>
+      <svg style={{ width: size, height: size, transform: 'rotate(-90deg)' }}>{curves}</svg>
 
       {label && (
         <div className={classes.label} style={{ right: thickness * 2, left: thickness * 2 }}>

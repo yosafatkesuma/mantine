@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { IconMoon } from '@tabler/icons';
+import { IconMoon } from '@tabler/icons-react';
 import { Stack } from '../Stack';
 import { Rating } from './Rating';
 import { Box } from '../Box';
 
 export default { title: 'Rating' };
+
+export function ReadOnlyWithDefaultValue() {
+  return <Rating defaultValue={2} readOnly />;
+}
 
 export function Sizes() {
   return (

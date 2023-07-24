@@ -11,9 +11,10 @@ function Demo() {
       total={10}
       position="center"
       styles={(theme) => ({
-        item: {
+        control: {
           '&[data-active]': {
             backgroundImage: theme.fn.gradient({ from: 'red', to: 'yellow' }),
+            border: 0,
           },
         },
       })}
@@ -28,9 +29,10 @@ function Demo() {
       total={10}
       position="center"
       styles={(theme) => ({
-        item: {
+        control: {
           '&[data-active]': {
             backgroundImage: theme.fn.gradient({ from: 'red', to: 'yellow' }),
+            border: 0,
           },
         },
       })}

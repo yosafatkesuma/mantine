@@ -1,6 +1,6 @@
 import React from 'react';
 import { MantineDemo } from '@mantine/ds';
-import { Slider, Text } from '@mantine/core';
+import { Slider, Text, Box } from '@mantine/core';
 
 const code = `
 import { Slider } from '@mantine/core';
@@ -24,6 +24,7 @@ function Demo() {
         max={10}
         label={(value) => value.toFixed(1)}
         step={0.1}
+        precision={1}
         styles={{ markLabel: { display: 'none' } }}
       />
 
@@ -49,7 +50,7 @@ function Demo() {
   ];
 
   return (
-    <div style={{ maxWidth: 400, margin: 'auto' }}>
+    <Box maw={400} mx="auto">
       <Text>Decimal step</Text>
       <Slider
         defaultValue={0}
@@ -60,17 +61,15 @@ function Demo() {
         styles={{ markLabel: { display: 'none' } }}
       />
 
-      <Text style={{ marginTop: 15 }}>Step matched with marks</Text>
-      <div style={{ paddingLeft: 4, paddingRight: 4 }}>
-        <Slider
-          defaultValue={50}
-          label={(val) => MARKS.find((mark) => mark.value === val).label}
-          step={25}
-          marks={MARKS}
-          styles={{ markLabel: { display: 'none' } }}
-        />
-      </div>
-    </div>
+      <Text mt="md">Step matched with marks</Text>
+      <Slider
+        defaultValue={50}
+        label={(val) => MARKS.find((mark) => mark.value === val).label}
+        step={25}
+        marks={MARKS}
+        styles={{ markLabel: { display: 'none' } }}
+      />
+    </Box>
   );
 }
 

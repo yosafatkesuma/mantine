@@ -1,5 +1,5 @@
 import React, { forwardRef, useState } from 'react';
-import { IconLink, IconExternalLink } from '@tabler/icons';
+import { IconLink, IconExternalLink } from '@tabler/icons-react';
 import {
   Popover,
   TextInput,
@@ -9,6 +9,7 @@ import {
   PopoverProps,
   Selectors,
   useComponentDefaultProps,
+  rem,
 } from '@mantine/core';
 import { useDisclosure, useInputState, useWindowEvent } from '@mantine/hooks';
 import { ControlBase, RichTextEditorControlBaseProps } from '../ControlBase/ControlBase';
@@ -23,26 +24,35 @@ export interface RichTextEditorLinkControlProps extends Partial<RichTextEditorCo
 
   /** Determines whether external link control tooltip should be disabled */
   disableTooltips?: boolean;
+
+  /** Initial state for determining if the link should be an external link */
+  initialExternal?: boolean;
 }
 
 const LinkIcon: RichTextEditorControlBaseProps['icon'] = ({ size, ...others }) => (
   <IconLink size={size} stroke={1.5} {...others} />
 );
 
-const defaultProps: Partial<RichTextEditorLinkControlProps> = {};
+const defaultProps: Partial<RichTextEditorLinkControlProps> = {
+  initialExternal: false,
+};
 
 export const LinkControl = forwardRef<HTMLButtonElement, RichTextEditorLinkControlProps>(
   (props, ref) => {
-    const { icon, popoverProps, disableTooltips, ...others } = useComponentDefaultProps(
-      'RichTextEditorLinkControl',
-      defaultProps,
-      props
-    );
+    const { icon, popoverProps, disableTooltips, initialExternal, ...others } =
+      useComponentDefaultProps('RichTextEditorLinkControl', defaultProps, props);
 
-    const { editor, labels, classNames, styles, unstyled } = useRichTextEditorContext();
-    const { classes } = useStyles(null, { name: 'RichTextEditor', classNames, styles, unstyled });
+    const { editor, labels, classNames, styles, unstyled, variant } = useRichTextEditorContext();
+    const { classes } = useStyles(null, {
+      name: 'RichTextEditor',
+      classNames,
+      styles,
+      unstyled,
+      variant,
+    });
+
     const [url, setUrl] = useInputState('');
-    const [external, setExternal] = useState(false);
+    const [external, setExternal] = useState(initialExternal);
     const [opened, { open, close }] = useDisclosure(false);
 
     const handleOpen = () => {
@@ -55,7 +65,7 @@ export const LinkControl = forwardRef<HTMLButtonElement, RichTextEditorLinkContr
     const handleClose = () => {
       close();
       setUrl('');
-      setExternal(false);
+      setExternal(initialExternal);
     };
 
     const setLink = () => {
@@ -135,7 +145,7 @@ export const LinkControl = forwardRef<HTMLButtonElement, RichTextEditorLinkContr
                     className={classes.linkEditorExternalControl}
                     unstyled={unstyled}
                   >
-                    <IconExternalLink size={14} stroke={1.5} />
+                    <IconExternalLink size={rem(14)} stroke={1.5} />
                   </UnstyledButton>
                 </Tooltip>
               }
